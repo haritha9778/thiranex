@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InkSpace — Blog Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,300;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fefcf8;--bg2:#fff;--bg3:#f7f4ef;
+  --accent:#c96a2c;--accent2:#e88a4e;--accent-lite:rgba(201,106,44,0.08);
+  --text:#1c1712;--muted:#7a7060;--border:#e8e0d4;
+  --shadow:0 2px 16px rgba(28,23,18,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* AUTH */
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--text);padding:1rem;}
+.auth-card{background:#fff;border-radius:20px;padding:2.5rem;width:100%;max-width:420px;}
+.auth-logo{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:0.3rem;}
+.auth-sub{color:var(--muted);font-size:0.88rem;margin-bottom:2rem;}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:12px;padding:4px;margin-bottom:1.5rem;}
+.auth-tab{flex:1;padding:0.55rem;border:none;background:transparent;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.auth-tab.active{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.auth-form{display:flex;flex-direction:column;gap:1rem;}
+.fld label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:5px;}
+.fld input{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
+.fld input:focus{border-color:var(--accent);}
+.auth-btn{background:var(--accent);color:#fff;border:none;padding:0.85rem;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;}
+.auth-btn:hover{opacity:0.88;}
+.auth-note{font-size:0.78rem;color:var(--muted);text-align:center;background:var(--bg3);padding:0.5rem;border-radius:8px;}
+.err{background:#fff0f0;color:#c53030;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;display:none;}
+
+/* APP */
+.app{display:none;min-height:100vh;flex-direction:column;}
+
+/* HEADER */
+header{background:#fff;border-bottom:1px solid var(--border);padding:0 3rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;color:var(--accent);letter-spacing:-0.5px;}
+.header-nav{display:flex;gap:1rem;list-style:none;}
+.header-nav button{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;color:var(--muted);cursor:pointer;padding:0.35rem 0.8rem;border-radius:8px;transition:all 0.15s;}
+.header-nav button:hover,.header-nav button.active{background:var(--accent-lite);color:var(--accent);}
+.header-right{display:flex;align-items:center;gap:0.8rem;}
+.write-btn{background:var(--accent);color:#fff;border:none;padding:0.55rem 1.2rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;}
+.write-btn:hover{opacity:0.88;}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--bg3);padding:0.35rem 0.9rem;border-radius:100px;}
+.uav{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.uname{font-size:0.82rem;font-weight:600;}
+.logout-btn{background:none;border:1.5px solid var(--border);padding:0.35rem 0.8rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--muted);}
+.logout-btn:hover{border-color:#c53030;color:#c53030;}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:2rem;max-width:1200px;margin:0 auto;padding:2.5rem 2rem;}
+.main-col{}
+.side-col{display:flex;flex-direction:column;gap:1.5rem;}
+
+/* HERO */
+.blog-hero{background:var(--text);color:#fff;border-radius:20px;padding:2.5rem;margin-bottom:2rem;}
+.blog-hero-label{font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:0.8rem;}
+.blog-hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:900;line-height:1.15;margin-bottom:0.8rem;letter-spacing:-0.5px;}
+.blog-hero p{color:rgba(255,255,255,0.6);font-size:0.95rem;line-height:1.7;margin-bottom:1.5rem;}
+.hero-meta{display:flex;align-items:center;gap:1rem;font-size:0.82rem;color:rgba(255,255,255,0.5);}
+.hero-author{display:flex;align-items:center;gap:8px;}
+.hero-av{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;}
+
+/* TABS/FILTER */
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.feed-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;}
+.feed-tabs{display:flex;gap:0.3rem;}
+.feed-tab{padding:0.4rem 0.9rem;border:1.5px solid var(--border);background:#fff;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.15s;}
+.feed-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* POST CARDS */
+.posts-feed{display:flex;flex-direction:column;gap:1.2rem;}
+.post-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:1.5rem;cursor:pointer;transition:all 0.18s;}
+.post-card:hover{border-color:var(--accent);box-shadow:var(--shadow);}
+.post-tag{display:inline-block;background:var(--accent-lite);color:var(--accent);font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.7rem;}
+.post-title{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;line-height:1.3;margin-bottom:0.5rem;letter-spacing:-0.2px;}
+.post-excerpt{color:var(--muted);font-size:0.88rem;line-height:1.7;margin-bottom:1rem;}
+.post-meta{display:flex;align-items:center;justify-content:space-between;}
+.post-author{display:flex;align-items:center;gap:8px;font-size:0.82rem;}
+.post-av{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;}
+.post-aname{font-weight:600;}
+.post-date{font-size:0.78rem;color:var(--muted);}
+.post-stats{display:flex;gap:0.8rem;font-size:0.78rem;color:var(--muted);}
+.post-actions-row{display:flex;gap:0.5rem;margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border);}
+.post-action-btn{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;color:var(--muted);padding:4px 8px;border-radius:6px;transition:all 0.15s;}
+.post-action-btn:hover{background:var(--accent-lite);color:var(--accent);}
+.post-action-btn.like-active{color:var(--accent);font-weight:700;}
+
+/* SIDEBAR */
+.sidebar-card{background:#fff;border-radius:14px;border:1.5px solid var(--border);padding:1.2rem;}
+.sidebar-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;margin-bottom:1rem;}
+.search-box{position:relative;}
+.search-box input{width:100%;padding:0.6rem 1rem 0.6rem 2.2rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+.search-box input:focus{border-color:var(--accent);}
+.search-box::before{content:'🔍';position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:0.78rem;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.tag-pill{padding:4px 10px;background:var(--bg3);border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.15s;border:none;font-family:'DM Sans',sans-serif;}
+.tag-pill:hover,.tag-pill.active{background:var(--accent);color:#fff;}
+.top-posts{display:flex;flex-direction:column;gap:0.7rem;}
+.top-post{display:flex;gap:10px;cursor:pointer;padding:0.5rem;border-radius:8px;transition:background 0.15s;}
+.top-post:hover{background:var(--bg3);}
+.top-post-rank{width:24px;height:24px;background:var(--accent-lite);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;}
+.top-post-name{font-size:0.82rem;font-weight:600;line-height:1.3;}
+
+/* SINGLE POST */
+.single-post{max-width:780px;}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;font-family:'DM Sans',sans-serif;margin-bottom:1.5rem;display:flex;align-items:center;gap:6px;padding:0;}
+.sp-tag{display:inline-block;background:var(--accent-lite);color:var(--accent);font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1rem;}
+.sp-title{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;line-height:1.15;letter-spacing:-0.5px;margin-bottom:1rem;}
+.sp-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.sp-author{display:flex;align-items:center;gap:10px;}
+.sp-av{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;}
+.sp-aname{font-weight:700;font-size:0.95rem;}
+.sp-date{font-size:0.78rem;color:var(--muted);}
+.sp-body{font-size:1.05rem;line-height:1.85;color:#2d2820;margin-bottom:2rem;}
+.sp-body p{margin-bottom:1.2rem;}
+.sp-body h2{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;margin:1.5rem 0 0.7rem;letter-spacing:-0.2px;}
+.sp-actions{display:flex;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.sp-action{display:flex;align-items:center;gap:6px;background:var(--bg3);border:none;padding:0.5rem 1rem;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;color:var(--muted);transition:all 0.15s;}
+.sp-action:hover,.sp-action.active{background:var(--accent-lite);color:var(--accent);}
+
+/* COMMENTS */
+.comments-section h3{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;margin-bottom:1.2rem;}
+.comment-form{background:var(--bg3);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem;}
+.comment-form textarea{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;resize:vertical;min-height:90px;outline:none;transition:border-color 0.2s;background:#fff;}
+.comment-form textarea:focus{border-color:var(--accent);}
+.comment-submit{background:var(--accent);color:#fff;border:none;padding:0.6rem 1.4rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;margin-top:0.7rem;transition:opacity 0.2s;}
+.comment-submit:hover{opacity:0.88;}
+.comment-list{display:flex;flex-direction:column;gap:1rem;}
+.comment-item{background:#fff;border-radius:12px;border:1.5px solid var(--border);padding:1rem 1.2rem;animation:ci 0.2s ease;}
+@keyframes ci{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.comment-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+.comment-author{display:flex;align-items:center;gap:8px;}
+.comment-av{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:0.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.comment-aname{font-weight:700;font-size:0.88rem;}
+.comment-date{font-size:0.75rem;color:var(--muted);}
+.comment-text{font-size:0.88rem;line-height:1.65;color:#3a3020;}
+.comment-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.75rem;}
+.comment-del:hover{color:#c53030;}
+
+/* WRITE POST */
+.write-page{max-width:760px;margin:0 auto;}
+.write-page h2{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;margin-bottom:1.5rem;}
+.write-form{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:1.8rem;display:flex;flex-direction:column;gap:1rem;}
+.write-form label{font-size:0.82rem;font-weight:700;display:block;margin-bottom:5px;}
+.write-form input,.write-form select,.write-form textarea{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
+.write-form input:focus,.write-form select:focus,.write-form textarea:focus{border-color:var(--accent);}
+.write-form textarea{resize:vertical;min-height:200px;line-height:1.7;}
+.write-actions{display:flex;gap:0.8rem;justify-content:flex-end;}
+.cancel-btn{background:none;border:1.5px solid var(--border);padding:0.65rem 1.4rem;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--muted);}
+.publish-btn{background:var(--accent);color:#fff;border:none;padding:0.65rem 1.8rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+.publish-btn:hover{opacity:0.88;}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+@media(max-width:900px){
+  header{padding:0 1rem;}
+  .layout{grid-template-columns:1fr;padding:1.5rem 1rem;}
+  .side-col{display:none;}
+  .sp-title{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">✒️ InkSpace</div>
+    <div class="auth-sub">Where ideas find their voice.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div class="err" id="authErr"></div>
+    <div class="auth-form" id="loginForm">
+      <div class="fld"><label>Email</label><input type="email" id="lemail" value="alice@inkspace.com"></div>
+      <div class="fld"><label>Password</label><input type="password" id="lpass" value="alice123"></div>
+      <button class="auth-btn" onclick="doLogin()">Login →</button>
+      <div class="auth-note">Demo: alice@inkspace.com / alice123</div>
+    </div>
+    <div class="auth-form" id="signupForm" style="display:none;">
+      <div class="fld"><label>Display Name</label><input type="text" id="sname" placeholder="Your name"></div>
+      <div class="fld"><label>Email</label><input type="email" id="semail" placeholder="you@example.com"></div>
+      <div class="fld"><label>Password</label><input type="password" id="spass" placeholder="Password (min 6 chars)"></div>
+      <button class="auth-btn" onclick="doSignup()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header>
+    <div class="logo-wrap" onclick="goFeed()">
+      <div class="logo">✒️ InkSpace</div>
+    </div>
+    <ul class="header-nav">
+      <li><button id="nav-feed" class="active" onclick="goFeed()">Feed</button></li>
+      <li><button id="nav-mine" onclick="goMine()">My Posts</button></li>
+    </ul>
+    <div class="header-right">
+      <button class="write-btn" onclick="goWrite()">✏️ Write</button>
+      <div class="user-pill"><div class="uav" id="uav">A</div><span class="uname" id="uname">Alice</span></div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- FEED PAGE -->
+  <div class="page active" id="pageFeed">
+    <div class="layout">
+      <div class="main-col">
+        <div id="heroSection"></div>
+        <div class="feed-header">
+          <div class="feed-title">Latest Posts</div>
+          <div class="feed-tabs">
+            <button class="feed-tab active" onclick="setFeedFilter('all',this)">All</button>
+            <button class="feed-tab" onclick="setFeedFilter('Technology',this)">Tech</button>
+            <button class="feed-tab" onclick="setFeedFilter('Design',this)">Design</button>
+            <button class="feed-tab" onclick="setFeedFilter('Lifestyle',this)">Lifestyle</button>
+          </div>
+        </div>
+        <div class="posts-feed" id="postsFeed"></div>
+      </div>
+      <div class="side-col">
+        <div class="sidebar-card">
+          <div class="sidebar-title">Search</div>
+          <div class="search-box"><input type="text" placeholder="Search posts..." oninput="searchPosts(this.value)"></div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">Topics</div>
+          <div class="tag-cloud" id="tagCloud"></div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">Trending Posts</div>
+          <div class="top-posts" id="topPosts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SINGLE POST PAGE -->
+  <div class="page" id="pageSingle">
+    <div style="max-width:1200px;margin:0 auto;padding:2.5rem 2rem;">
+      <div class="single-post" id="singleContent"></div>
+    </div>
+  </div>
+
+  <!-- WRITE PAGE -->
+  <div class="page" id="pageWrite">
+    <div style="max-width:1200px;margin:0 auto;padding:2.5rem 2rem;">
+      <div class="write-page">
+        <h2 id="writeTitle">Write a New Post</h2>
+        <div class="write-form">
+          <input type="hidden" id="editPostId">
+          <div>
+            <label>Post Title *</label>
+            <input type="text" id="postTitle" placeholder="An interesting title...">
+          </div>
+          <div>
+            <label>Category</label>
+            <select id="postCat">
+              <option>Technology</option>
+              <option>Design</option>
+              <option>Lifestyle</option>
+              <option>Science</option>
+              <option>Business</option>
+              <option>Culture</option>
+            </select>
+          </div>
+          <div>
+            <label>Excerpt (short summary)</label>
+            <input type="text" id="postExcerpt" placeholder="One line describing your post...">
+          </div>
+          <div>
+            <label>Content *</label>
+            <textarea id="postContent" placeholder="Write your post here... You can use paragraphs and headings like: ## Section Title"></textarea>
+          </div>
+          <div class="write-actions">
+            <button class="cancel-btn" onclick="goFeed()">Cancel</button>
+            <button class="publish-btn" onclick="publishPost()">Publish Post →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY POSTS PAGE -->
+  <div class="page" id="pageMine">
+    <div style="max-width:900px;margin:0 auto;padding:2.5rem 2rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+        <h2 style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;">My Posts</h2>
+        <button class="publish-btn" onclick="goWrite()">✏️ Write New</button>
+      </div>
+      <div class="posts-feed" id="myPostsFeed"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const DEMO_USERS=[
+  {name:'Alice Chen',email:'alice@inkspace.com',pass:'alice123'},
+  {name:'Bob Martin',email:'bob@inkspace.com',pass:'bob123'},
+];
+const SEED_POSTS=[
+  {id:1,title:'The Future of Web Development in 2026',excerpt:'How AI, WebAssembly and edge computing are changing how we build for the web.',content:`## Introduction\n\nThe web development landscape in 2026 is radically different from just a few years ago. AI code assistants are ubiquitous, WebAssembly has matured into a first-class deployment target, and edge computing has made global low-latency apps the norm.\n\n## AI-Assisted Development\n\nDevelopers now routinely pair with AI assistants that understand codebases, suggest refactors, write tests, and even deploy. The debate is no longer "will AI replace developers" — it's about how to collaborate effectively.\n\n## Edge Computing\n\nWith platforms like Cloudflare Workers and Vercel Edge Functions reaching mainstream adoption, server-side rendering at the edge has become the default. Users in Chennai get the same sub-100ms response as users in London.`,cat:'Technology',author:'Alice Chen',email:'alice@inkspace.com',date:'May 20, 2026',likes:42,liked:[],comments:[]},
+  {id:2,title:'Designing for Accessibility First',excerpt:'Why accessibility isn\'t a feature — it\'s a foundation for better design.',content:`## Why Accessibility Matters\n\nAccessibility is often treated as an afterthought — a checklist item before launch. But the most forward-thinking design teams are flipping this model: building accessible interfaces from the very first wireframe.\n\n## Contrast and Color\n\nThe WCAG 2.2 guidelines recommend a 4.5:1 contrast ratio for normal text. Tools like Figma's built-in contrast checker and plugins like A11y make this easy to verify at design time.\n\n## Keyboard Navigation\n\nEvery interactive element should be reachable and usable via keyboard alone. This benefits not just screen-reader users but power users and those with motor impairments.`,cat:'Design',author:'Bob Martin',email:'bob@inkspace.com',date:'May 18, 2026',likes:28,liked:[],comments:[{id:1,author:'Alice Chen',email:'alice@inkspace.com',text:'Great piece! The contrast ratio point is so often overlooked. I always run through keyboard navigation as a final QA step.',date:'May 19, 2026'}]},
+  {id:3,title:'Morning Habits That Actually Work',excerpt:'Science-backed routines that productive people swear by — and why they work.',content:`## The Myth of the 5 AM Club\n\nEvery productivity guru seems to have a "morning routine" they swear by. Wake at 5 AM, cold shower, journal, meditate, run 10 km — all before 8 AM. While impressive, this approach ignores a fundamental truth: chronobiology is real.\n\n## What the Research Shows\n\nStudies consistently find that what matters isn't the time you wake up, but the consistency of your sleep-wake cycle. A stable rhythm — whatever time that is — leads to better focus, mood, and productivity.\n\n## Three Habits Worth Keeping\n\n1. **Hydrate first** — a glass of water before coffee helps your body reset after sleep.\n2. **No screens for 20 minutes** — let your nervous system wake up without stimulation.\n3. **Name three priorities** — not a 20-item todo list, just three things that matter today.`,cat:'Lifestyle',author:'Alice Chen',email:'alice@inkspace.com',date:'May 15, 2026',likes:61,liked:[],comments:[]},
+  {id:4,title:'RESTful API Design Principles',excerpt:'Practical patterns for building APIs that developers actually enjoy using.',content:`## Why API Design Matters\n\nAn API is a product. Its users are developers, and a poorly designed API creates friction, bugs, and frustration. Great APIs feel intuitive — you can guess the endpoints before reading the docs.\n\n## Resource Naming\n\nUse nouns, not verbs. Instead of /getUser or /createPost, use GET /users/:id and POST /posts. HTTP methods already express the action.\n\n## Status Codes\n\nUse them correctly. 200 for success, 201 for creation, 400 for bad requests, 401 for unauthenticated, 403 for unauthorized, 404 for not found, 500 for server errors. Don't return 200 with an error body.\n\n## Versioning\n\nVersion from day one. /api/v1/users is much easier to maintain than retrofitting versioning later.`,cat:'Technology',author:'Bob Martin',email:'bob@inkspace.com',date:'May 12, 2026',likes:35,liked:[],comments:[]},
+];
+
+let users=[...DEMO_USERS,...JSON.parse(localStorage.getItem('is_users')||'[]')];
+let posts=JSON.parse(localStorage.getItem('is_posts')||JSON.stringify(SEED_POSTS));
+let currentUser=JSON.parse(localStorage.getItem('is_user')||'null');
+let feedFilter='all';
+let searchQuery='';
+let currentPostId=null;
+
+function save(){localStorage.setItem('is_posts',JSON.stringify(posts));}
+
+// ===== AUTH =====
+function switchTab(t){
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',t==='login'?i===0:i===1));
+  document.getElementById('loginForm').style.display=t==='login'?'flex':'none';
+  document.getElementById('signupForm').style.display=t==='signup'?'flex':'none';
+}
+function showErr(m){const el=document.getElementById('authErr');el.style.display='block';el.textContent=m;setTimeout(()=>el.style.display='none',3000);}
+function doLogin(){
+  const e=document.getElementById('lemail').value.trim(),p=document.getElementById('lpass').value;
+  const u=users.find(u=>u.email===e&&u.pass===p);
+  if(!u) return showErr('Invalid email or password.');
+  currentUser=u;localStorage.setItem('is_user',JSON.stringify(u));bootApp();
+}
+function doSignup(){
+  const n=document.getElementById('sname').value.trim(),e=document.getElementById('semail').value.trim(),p=document.getElementById('spass').value;
+  if(!n||!e||!p) return showErr('Fill all fields.');
+  if(p.length<6) return showErr('Password must be at least 6 characters.');
+  if(users.find(u=>u.email===e)) return showErr('Email already registered.');
+  const nu={name:n,email:e,pass:p};
+  users.push(nu);
+  const saved=JSON.parse(localStorage.getItem('is_users')||'[]');
+  saved.push(nu);
+  localStorage.setItem('is_users',JSON.stringify(saved));
+  currentUser=nu;localStorage.setItem('is_user',JSON.stringify(nu));
+  bootApp();
+}
+function doLogout(){
+  localStorage.removeItem('is_user');currentUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+}
+function bootApp(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('uname').textContent=currentUser.name.split(' ')[0];
+  document.getElementById('uav').textContent=currentUser.name[0].toUpperCase();
+  goFeed();
+}
+if(currentUser) bootApp();
+
+// ===== PAGES =====
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goFeed(){showPage('pageFeed');document.getElementById('nav-feed').classList.add('active');document.getElementById('nav-mine').classList.remove('active');renderFeed();renderSidebar();}
+function goMine(){showPage('pageMine');document.getElementById('nav-mine').classList.add('active');document.getElementById('nav-feed').classList.remove('active');renderMine();}
+function goWrite(postId=null){
+  showPage('pageWrite');
+  document.getElementById('editPostId').value='';
+  document.getElementById('postTitle').value='';
+  document.getElementById('postContent').value='';
+  document.getElementById('postExcerpt').value='';
+  document.getElementById('writeTitle').textContent='Write a New Post';
+  if(postId){
+    const p=posts.find(x=>x.id===postId);
+    if(p){
+      document.getElementById('editPostId').value=p.id;
+      document.getElementById('postTitle').value=p.title;
+      document.getElementById('postCat').value=p.cat;
+      document.getElementById('postExcerpt').value=p.excerpt;
+      document.getElementById('postContent').value=p.content;
+      document.getElementById('writeTitle').textContent='Edit Post';
+    }
+  }
+}
+
+// ===== FEED =====
+function setFeedFilter(f,btn){feedFilter=f;document.querySelectorAll('.feed-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderFeed();}
+function searchPosts(q){searchQuery=q.toLowerCase();renderFeed();}
+
+function getFilteredPosts(){
+  let p=[...posts].sort((a,b)=>b.id-a.id);
+  if(feedFilter!=='all') p=p.filter(x=>x.cat===feedFilter);
+  if(searchQuery) p=p.filter(x=>x.title.toLowerCase().includes(searchQuery)||x.excerpt.toLowerCase().includes(searchQuery)||x.content.toLowerCase().includes(searchQuery));
+  return p;
+}
+
+function renderFeed(){
+  // Hero: latest post
+  const latest=posts.sort((a,b)=>b.id-a.id)[0];
+  if(latest){
+    document.getElementById('heroSection').innerHTML=`
+      <div class="blog-hero" onclick="viewPost(${latest.id})" style="cursor:pointer;">
+        <div class="blog-hero-label">✨ Featured</div>
+        <h1>${latest.title}</h1>
+        <p>${latest.excerpt}</p>
+        <div class="hero-meta">
+          <div class="hero-author"><div class="hero-av">${latest.author[0]}</div><span>${latest.author}</span></div>
+          <span>·</span><span>${latest.date}</span>
+          <span>·</span><span>❤️ ${latest.likes}</span>
+          <span>·</span><span>💬 ${latest.comments.length}</span>
+        </div>
+      </div>`;
+  }
+  const filtered=getFilteredPosts();
+  const feed=document.getElementById('postsFeed');
+  if(!filtered.length){feed.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);">No posts found.</div>';return;}
+  feed.innerHTML=filtered.map(p=>renderPostCard(p)).join('');
+}
+
+function renderPostCard(p){
+  const isOwner=p.email===currentUser.email;
+  const isLiked=p.liked&&p.liked.includes(currentUser.email);
+  return `<div class="post-card">
+    <div onclick="viewPost(${p.id})">
+      <div class="post-tag">${p.cat}</div>
+      <div class="post-title">${p.title}</div>
+      <div class="post-excerpt">${p.excerpt}</div>
+      <div class="post-meta">
+        <div class="post-author"><div class="post-av">${p.author[0]}</div><div><div class="post-aname">${p.author}</div><div class="post-date">${p.date}</div></div></div>
+        <div class="post-stats"><span>❤️ ${p.likes}</span><span>💬 ${p.comments.length}</span></div>
+      </div>
+    </div>
+    <div class="post-actions-row">
+      <button class="post-action-btn ${isLiked?'like-active':''}" onclick="toggleLike(${p.id},this)">❤️ ${isLiked?'Liked':'Like'}</button>
+      <button class="post-action-btn" onclick="viewPost(${p.id})">💬 Comment</button>
+      ${isOwner?`<button class="post-action-btn" onclick="goWrite(${p.id})">✏️ Edit</button><button class="post-action-btn" style="color:#c53030;" onclick="deletePost(${p.id})">🗑️ Delete</button>`:''}
+    </div>
+  </div>`;
+}
+
+function renderSidebar(){
+  // Tags
+  const cats=[...new Set(posts.map(p=>p.cat))];
+  document.getElementById('tagCloud').innerHTML=cats.map(c=>`<button class="tag-pill ${feedFilter===c?'active':''}" onclick="setFeedFilterDirect('${c}')">${c}</button>`).join('');
+  // Top posts
+  const top=[...posts].sort((a,b)=>b.likes-a.likes).slice(0,5);
+  document.getElementById('topPosts').innerHTML=top.map((p,i)=>`<div class="top-post" onclick="viewPost(${p.id})"><div class="top-post-rank">${i+1}</div><div class="top-post-name">${p.title}</div></div>`).join('');
+}
+function setFeedFilterDirect(c){
+  feedFilter=c;
+  document.querySelectorAll('.feed-tab').forEach(b=>b.classList.remove('active'));
+  renderFeed();renderSidebar();
+}
+
+// ===== SINGLE POST =====
+function viewPost(id){
+  const p=posts.find(x=>x.id===id);
+  if(!p) return;
+  currentPostId=id;
+  const isOwner=p.email===currentUser.email;
+  const isLiked=p.liked&&p.liked.includes(currentUser.email);
+  const bodyHtml=p.content.split('\n').map(line=>{
+    if(line.startsWith('## ')) return `<h2>${line.slice(3)}</h2>`;
+    if(line.trim()) return `<p>${line}</p>`;
+    return '';
+  }).join('');
+  document.getElementById('singleContent').innerHTML=`
+    <button class="back-btn" onclick="goFeed()">← Back to Feed</button>
+    <div class="sp-tag">${p.cat}</div>
+    <div class="sp-title">${p.title}</div>
+    <div class="sp-meta">
+      <div class="sp-author"><div class="sp-av">${p.author[0]}</div><div><div class="sp-aname">${p.author}</div><div class="sp-date">${p.date}</div></div></div>
+      ${isOwner?`<div style="display:flex;gap:0.5rem;"><button class="post-action-btn" onclick="goWrite(${p.id})">✏️ Edit</button><button class="post-action-btn" style="color:#c53030;" onclick="deletePost(${p.id},true)">🗑️ Delete</button></div>`:''}
+    </div>
+    <div class="sp-body">${bodyHtml}</div>
+    <div class="sp-actions">
+      <button class="sp-action ${isLiked?'active':''}" id="likeBtn" onclick="toggleLike(${p.id},this,true)">❤️ ${p.likes} Likes</button>
+      <button class="sp-action">💬 ${p.comments.length} Comments</button>
+    </div>
+    <div class="comments-section">
+      <h3>💬 Discussion (${p.comments.length})</h3>
+      <div class="comment-form">
+        <textarea id="commentInput" placeholder="Share your thoughts..."></textarea>
+        <button class="comment-submit" onclick="postComment(${p.id})">Post Comment</button>
+      </div>
+      <div class="comment-list" id="commentList"></div>
+    </div>`;
+  renderComments(p);
+  showPage('pageSingle');
+}
+
+function renderComments(p){
+  const list=document.getElementById('commentList');
+  if(!list) return;
+  list.innerHTML=p.comments.length?p.comments.map(c=>`
+    <div class="comment-item">
+      <div class="comment-header">
+        <div class="comment-author"><div class="comment-av">${c.author[0]}</div><div><div class="comment-aname">${c.author}</div><div class="comment-date">${c.date}</div></div></div>
+        ${c.email===currentUser.email?`<button class="comment-del" onclick="deleteComment(${p.id},${c.id})">✕ Delete</button>`:''}
+      </div>
+      <div class="comment-text">${c.text}</div>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:0.88rem;text-align:center;padding:1.5rem;">Be the first to comment!</div>';
+}
+
+function postComment(postId){
+  const input=document.getElementById('commentInput');
+  const text=input.value.trim();
+  if(!text) return;
+  const p=posts.find(x=>x.id===postId);
+  if(!p) return;
+  const comment={id:Date.now(),author:currentUser.name,email:currentUser.email,text,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})};
+  p.comments.push(comment);
+  save();
+  input.value='';
+  renderComments(p);
+  // Update count buttons
+  document.querySelectorAll('.sp-action').forEach(b=>{if(b.textContent.includes('Comment')) b.textContent=`💬 ${p.comments.length} Comments`;});
+}
+
+function deleteComment(postId,commentId){
+  const p=posts.find(x=>x.id===postId);
+  if(!p) return;
+  p.comments=p.comments.filter(c=>c.id!==commentId);
+  save();renderComments(p);
+}
+
+// ===== LIKES =====
+function toggleLike(postId,btn,isSingle=false){
+  const p=posts.find(x=>x.id===postId);
+  if(!p) return;
+  if(!p.liked) p.liked=[];
+  const idx=p.liked.indexOf(currentUser.email);
+  if(idx>-1){p.liked.splice(idx,1);p.likes=Math.max(0,p.likes-1);}
+  else{p.liked.push(currentUser.email);p.likes++;}
+  save();
+  if(isSingle){
+    btn.classList.toggle('active',p.liked.includes(currentUser.email));
+    btn.textContent=`❤️ ${p.likes} Likes`;
+  } else {
+    btn.classList.toggle('like-active',p.liked.includes(currentUser.email));
+    btn.textContent=p.liked.includes(currentUser.email)?'❤️ Liked':'❤️ Like';
+    // Update nearby stats
+    const card=btn.closest('.post-card');
+    if(card){const stats=card.querySelector('.post-stats span');if(stats) stats.textContent=`❤️ ${p.likes}`;}
+  }
+}
+
+// ===== WRITE / EDIT =====
+function publishPost(){
+  const title=document.getElementById('postTitle').value.trim();
+  const content=document.getElementById('postContent').value.trim();
+  if(!title||!content) return alert('Title and content are required.');
+  const editId=document.getElementById('editPostId').value;
+  if(editId){
+    const p=posts.find(x=>x.id===parseInt(editId));
+    if(p){p.title=title;p.cat=document.getElementById('postCat').value;p.excerpt=document.getElementById('postExcerpt').value.trim()||content.slice(0,100)+'...';p.content=content;}
+  } else {
+    posts.unshift({id:Date.now(),title,excerpt:document.getElementById('postExcerpt').value.trim()||content.slice(0,100)+'...',content,cat:document.getElementById('postCat').value,author:currentUser.name,email:currentUser.email,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}),likes:0,liked:[],comments:[]});
+  }
+  save();goFeed();
+}
+
+// ===== DELETE =====
+function deletePost(id,goBack=false){
+  if(!confirm('Delete this post?')) return;
+  posts=posts.filter(p=>p.id!==id);
+  save();
+  if(goBack) goFeed();
+  else renderFeed();
+}
+
+// ===== MY POSTS =====
+function renderMine(){
+  const mine=posts.filter(p=>p.email===currentUser.email);
+  const feed=document.getElementById('myPostsFeed');
+  if(!mine.length){feed.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);">You haven\'t published any posts yet.<br><br><button class="publish-btn" onclick="goWrite()">Write Your First Post</button></div>';return;}
+  feed.innerHTML=mine.map(p=>renderPostCard(p)).join('');
+}
+</script>
+</body>
+</html>
